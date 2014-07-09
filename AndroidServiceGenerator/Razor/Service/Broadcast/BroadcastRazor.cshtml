@@ -1,0 +1,73 @@
+﻿@* Generator : Template TypeVisibility : Internal *@
+@using System
+@using System.CodeDom
+@using System.Linq
+@using Parse
+@using Razor.Service.Broadcast
+@using Razor.Service
+@using Razor.Common
+
+@functions {
+    public ServiceParser TheService { get; set; }
+}
+@{
+    //const strin wontCompile;
+    const string localBroadcastsRegion = "Local Broadcasts";
+}
+
+@* Copyright *@
+@{
+    @(new Copyright().TransformText());
+}
+@* Package *@
+package @{@TheService.Package}.broadcast;
+
+@* Imports *@
+import com.laskon.android.stubs.WrappingLog;
+import com.laskon.android.stubs.WrappingLocalBroadcastManager;
+@foreach (var action in TheService.Actions.OutgoingActions)
+{
+@:import @{@TheService.Package}.broadcast.outgoing.@{@action.IntentClassName(TheService)};
+}
+@foreach(var imp in TheService.Imports)
+{
+@:import @{@imp};
+}
+/*
+ * These functions will create then broadcast an intent. 
+*/
+public final class @{@ClassNames.Broadcaster(TheService)} {
+
+    @((new RegionBeg { RegionLabel = localBroadcastsRegion }).TransformText().Trim())
+
+    @foreach (var action in TheService.Actions.OutgoingActions)
+    {
+        var broadcastAndroid = action.BroadcastType == OutgoingAction.BroadcasterType.Android || action.BroadcastType == OutgoingAction.BroadcasterType.Both;
+        var broadcastLocal = action.BroadcastType == OutgoingAction.BroadcasterType.Local || action.BroadcastType == OutgoingAction.BroadcasterType.Both;
+        var methodName = "broadcast" + action.MixedCaseName;
+        
+@:    public static void @{@methodName}(@{@action.ParamsDeclarations(TheService)}) {
+@:        WrappingLog.v("@{@methodName}");
+if(broadcastLocal){
+        var stickyMethod = "";
+    if (action.Sticky.IsSticky)
+    {
+    stickyMethod = "Sticky";
+    foreach (var clearAction in action.Sticky.ClearActionKeys.Select(actionKey => TheService.Actions.OutgoingActions.Find(item => item.Name == actionKey)))
+    {
+@:        WrappingLocalBroadcastManager.instance.clearStickyBroadcast(new Intent(@{@ClassNames.IntentBase(TheService)}.@{@clearAction.FieldName(TheService)});
+    }
+    }
+@:        WrappingLocalBroadcastManager.instance.send@{@stickyMethod}Broadcast(new @{@action.IntentClassName(TheService)}(@{@action.ParamsNames(TheService)}));
+}//broadcastLocal
+@:
+if (broadcastAndroid)
+{
+@:        WtContext.getContext().sendBroadcast(new @{@action.IntentClassName(TheService)}(@{@action.ParamsNames(TheService)}));
+}//broadcastAndroid
+@:    }
+@:
+
+    }
+    @((new RegionBeg { RegionLabel = localBroadcastsRegion }).TransformText().Trim())
+}

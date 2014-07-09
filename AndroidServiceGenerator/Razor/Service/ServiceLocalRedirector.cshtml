@@ -1,0 +1,31 @@
+﻿@* Generator : Template TypeVisibility : Internal *@
+@using Parse
+@using Razor.Common
+@functions{
+    private const string regionLabel = "Local Broadcast Receiver";
+    public ServiceParser TheService { get; set; }
+}
+    @((new RegionBeg { RegionLabel = regionLabel }).TransformText().Trim())
+    private static final LocalBroadcastRedirector _redirector = new LocalBroadcastRedirector(@{@TheService.Name}.class);
+
+    /**
+     * Register redirector filters
+     */
+    private static void registerRedirectorFilter() {
+
+        IntentFilter filter = new IntentFilter();
+
+@foreach (var action in TheService.Actions.IncomingAndExternalActions)
+{
+@:        filter.addAction(@{@ClassNames.IntentBase(TheService)}.@{@action.FieldName(TheService)});
+}
+@*
+@if (!string.IsNullOrWhiteSpace(TheService.IntentFilterPriority))
+{
+@:        filter.setPriority(@{@TheService.IntentFilterPriority});    
+}
+*@
+        _redirector.registerLocalBroadcastReceiver(filter);
+    }
+
+    @((new RegionEnd { RegionLabel = regionLabel }).TransformText().Trim())

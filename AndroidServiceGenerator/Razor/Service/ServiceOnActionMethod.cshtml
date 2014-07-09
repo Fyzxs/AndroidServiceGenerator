@@ -1,0 +1,36 @@
+﻿@* Generator : Template TypeVisibility : Internal *@
+@using System
+@using System.Linq
+@using Parse
+@using Razor.Common
+
+@functions
+{
+    public ActionBase TheAction { get; set; }
+    public ServiceParser TheService { get; set; }
+}
+@{
+    var methodName = "on" + TheAction.MixedCaseName;
+}
+    @@SuppressWarnings("unused")//This method is invoked using reflection
+    private void @{@methodName}(final Intent intent){
+
+        if(!@{@ClassNames.IntentBase(TheService)}.@{@TheAction.ValidationMethodName}(intent)) return;
+@{<text>        </text>@TheAction.IntentClassName(TheService)} castIntent = new @{@TheAction.IntentClassName(TheService)}(intent);
+
+        @foreach (var key in TheAction.ParamExtraKeys)
+        {
+            foreach (var ex in TheService.Extras.DistinctExtras)
+            {
+                if (ex.Name != key)
+                {
+                    continue;
+                }
+@:        final @{@ex.Type} @{@ex.ParamName()} = castIntent.@{@ex.GetMethodName()}();
+            }
+        }
+
+        /*
+         *  TODO: Implement functionality
+         */
+    }

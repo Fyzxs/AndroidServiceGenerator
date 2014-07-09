@@ -1,0 +1,80 @@
+﻿@* Generator : Template TypeVisibility : Internal *@
+@using System
+@using Parse
+@using Razor.Service
+@using Razor.Common
+@*
+    The parser for this class can later be expanded to include columns & types and the to/from type, ect
+ *@
+
+@functions {
+    public ServiceParser TheService { get; set; }
+}
+@{
+    //const strin wontCompile;
+    var className = TheService.Name + "Database";
+}
+
+}
+@* Copyright *@
+@{ new Copyright { }.TransformText();}
+
+@* Package *@
+package @{@TheService.Package}.database;
+
+@* Imports *@
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import android.database.sqlite.SQLiteOpenHelper;
+
+/**
+ * TODO: Describe what this class does
+ */
+public final class @className extends SQLiteOpenHelper {
+
+    private static @className _instance = new @{@className}(Application.getInstance());
+
+    public static @className getInstance() {
+        return _instance;
+    }
+    
+    private static final int DATABASE_VERSION = 1;
+    
+    // Database name
+    private static final String DATABASE_NAME = null; //TODO: Name Me
+
+    // Table name
+    private static final String TABLE_name_me = "name_me";//TODO: Name me
+    
+    //Column names
+    private static final String COLUMN_name_me = "name_me";//TODO: Name me
+    /* Probably will want to expand the number of columns */
+    
+
+    private static final String CREATE_TABLE_name_me = 
+            "CREATE TABLE " + TABLE_name_me + " (" +
+                COLUMN_name_me + " TEXT, " +
+                /* Probably gonna have more columns - if not, the comma above will need to be removed */
+            ");";
+
+    private @{@className}(final Context context) {
+        super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
+    }
+    
+    @@Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(TABLE_name_me);
+
+    }
+
+    @@Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (db != null) {
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_name_me);
+            onCreate(db);
+        }
+    }
+}

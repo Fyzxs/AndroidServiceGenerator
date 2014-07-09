@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6A204B92-0040-4E93-BDEB-A815F09A49B3}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AndroidServiceGenerator</RootNamespace>
+    <AssemblyName>AndroidServiceGenerator</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RazorGenerator.Templating, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RazorGenerator.Templating.2.1.1\lib\net40\RazorGenerator.Templating.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Parse\ServiceParser.cs" />
+    <Compile Include="Razor\Common\Copyright.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Copyright.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Service\Broadcast\BroadcastRazor.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BroadcastRazor.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Service\Broadcast\IntentBaseRazor.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IntentBaseRazor.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Service\Broadcast\IntentFactoryRazor.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IntentFactoryRazor.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Service\Broadcast\IntentRazor.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IntentRazor.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Common\ClassNames.cs" />
+    <Compile Include="Razor\Common\Region.generated.cs">
+      <DependentUpon>Region.cshtml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Razor\Common\RegionBeg.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RegionBeg.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Common\RegionEnd.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RegionEnd.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Service\Database\DatabaseRazor.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DatabaseRazor.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Service\Receiver\ReceiverRazor.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReceiverRazor.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Service\ServiceLocalRedirector.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ServiceLocalRedirector.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Service\ServiceOnActionMethod.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ServiceOnActionMethod.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Razor\Service\ServiceRazor.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ServiceRazor.cshtml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+    <None Include="Razor\Service\Broadcast\BroadcastRazor.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>BroadcastRazor.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Service\Broadcast\IntentBaseRazor.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>IntentBaseRazor.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Service\Broadcast\IntentFactoryRazor.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>IntentFactoryRazor.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Service\Broadcast\IntentRazor.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>IntentRazor.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Common\Region.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Region.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Common\RegionEnd.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>RegionEnd.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Common\RegionBeg.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>RegionBeg.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Service\Database\DatabaseRazor.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>DatabaseRazor.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Service\Receiver\ReceiverRazor.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ReceiverRazor.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Service\ServiceLocalRedirector.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ServiceLocalRedirector.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Service\ServiceOnActionMethod.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ServiceOnActionMethod.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Common\Copyright.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Copyright.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Razor\Service\ServiceRazor.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ServiceRazor.generated.cs</LastGenOutput>
+    </None>
+    <None Include="SampleTemplate.cshtml">
+      <Generator>RazorGenerator</Generator>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Stubs\AcsIntentService.java" />
+    <Content Include="Stubs\AcsService.java" />
+    <Content Include="Stubs\IntentBase.java" />
+    <Content Include="Stubs\LocalBroadcastRedirector.java" />
+    <Content Include="Stubs\StringUtils.java" />
+    <Content Include="Stubs\WrappingLocalBroadcastManager.java" />
+    <Content Include="Stubs\WrappingLog.java" />
+    <Content Include="TODO.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

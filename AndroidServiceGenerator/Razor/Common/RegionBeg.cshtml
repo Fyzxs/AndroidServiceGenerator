@@ -1,0 +1,7 @@
+﻿@* Generator : Template TypeVisibility : Internal *@
+@using System
+@using Razor.Common
+@functions{
+    public String RegionLabel { get; set; }
+}
+@((new Region { Tag = "BEG", RegionLabel = RegionLabel }).TransformText().Trim())

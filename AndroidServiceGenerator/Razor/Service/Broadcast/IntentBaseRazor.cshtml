@@ -1,0 +1,206 @@
+﻿@* Generator : Template TypeVisibility : Internal *@
+@using Parse
+@using Razor.Service
+@using Razor.Service.Broadcast
+@using Razor.Common
+@functions {
+    public ServiceParser TheService { get; set; }
+}
+@{
+    const string actionValuesRegion = "Action Values";
+    const string extaValuesRegion = "Extra Values";
+    const string ctorRegion = "ctor";
+    const string intentValidationRegion = "Intent Validation";
+    const string extraGetPutRegion = "Extra Get Put";
+}
+@* Copyright *@
+@{
+    @(new Copyright().TransformText());
+}
+@* Package *@
+package @{@TheService.Package}.broadcast;
+@* Imports *@
+import android.content.ComponentName;
+import android.content.Intent;
+
+import com.laskon.android.stubs.IntentBase;
+import com.laskon.stubs.StringUtils;
+import @{@TheService.Package}.@{@TheService.Name};
+@foreach(var imp in TheService.Imports)
+{
+@:import @{@imp};
+}
+@foreach(var imp in TheService.IntentBaseImports)
+{
+@:import @{@imp};
+}
+/**
+ * Base public class for intents relating to the @TheService.Name.
+ *
+ * The outgoing intents are used by other elements of the GamesApp to respond to changes in the state
+ * or progress of the in-service download.
+ *
+ * The incoming intents are intents defined by the service to initiate specific functionality or changes.
+ *
+ * Externally defined intents are intents that this service listens to that are broadcast out from other components of
+ * the App and not specifically directed to this service; Changes this service wants to react to.
+*/
+public abstract class @{@ClassNames.IntentBase(TheService)} extends IntentBase {
+
+    @((new RegionBeg { RegionLabel = actionValuesRegion }).TransformText().Trim())
+
+    //
+    // Outgoing Intents
+    //
+    @foreach (var action in TheService.Actions.OutgoingActions)
+    {
+    @:public static final String @{@action.FieldName(TheService)} = @{@action.FieldValue(TheService)};
+    }
+
+    //
+    // Incoming Intents
+    //
+    @foreach (var action in TheService.Actions.IncomingActions)
+    {
+    @:public static final String @{@action.FieldName(TheService)} = @{@action.FieldValue(TheService)};                                         
+    }
+
+    //
+    //  Externally Defined Intent Checks
+    //
+    //
+    //    These values are going to be defined by other components, but need to be utilized in the SvsSyncGameService. Having these values
+    //    here simplifies and localizes the listened to ACTIONS into a single location in the code. Any changes in the external componenets will
+    //    only need to be modified /here/. It provides a minimal amount of work when other components get refactored.
+    //
+    //    This also allows us to be able to implement static 'is[INTENT]' functions for the service to use.
+    //
+    //    ATTN: If you are changing these values; change them in the manifests as well.
+    //
+    @foreach (var action in TheService.Actions.ExternalActions)
+    {
+    @:public static final String @{@action.FieldName(TheService)} = @{@action.FieldValue(TheService)};
+    }
+    
+    @((new RegionEnd { RegionLabel = actionValuesRegion }).TransformText().Trim())
+
+    @((new RegionBeg { RegionLabel = extaValuesRegion }).TransformText().Trim())
+
+    //
+    // Internal Extra Values
+    //
+    /* Extras only in internally defined incoming intents */
+    @if (TheService.Extras.InternalExtras.Count > 0)
+    {
+        foreach (var extra in TheService.Extras.InternalExtras)
+        {
+    @:private static final String @extra.FieldName() = @{ @extra.Value};
+    }
+    }
+    else
+    {
+    @://Extras that will only be used in internally defined intents for this service
+    }
+    /* Extras available in outgoing intents */
+    @if (TheService.Extras.PublicExtras.Count > 0)
+    {
+        foreach (var extra in TheService.Extras.PublicExtras)
+        {
+    @:public static final String @extra.FieldName() = @{ @extra.Value};
+    }
+    }
+    else
+    {
+    @://Extras that will be used in outgoing intents for this service
+    }
+
+    //
+    //Externally Defined Extras
+    //
+    /* Extras only in internally defined incoming intents */
+    @if (TheService.Extras.ExternalExtras.Count > 0)
+    {
+        foreach (var extra in TheService.Extras.ExternalExtras)
+        {
+    @:protected static final String @extra.FieldName() = @{ @extra.Value};
+    }
+    }
+    else
+    {
+    @://Extras not defined as part of this service
+    }
+    
+    @((new RegionEnd { RegionLabel = extaValuesRegion }).TransformText().Trim())
+
+	/**
+	 * Generates the ComponentName for incoming intents
+	 */
+	protected ComponentName getServiceComponentName(){
+	    return new ComponentName(@{@TheService.Name}.class.getPackage().getName(), @{@TheService.Name}.class.getSimpleName());
+    }
+
+    @((new RegionBeg { RegionLabel = ctorRegion }).TransformText().Trim())
+    /**
+     * Protected constructor to create derived type from an existing intent.
+     * Very useful for 'casting' an intent to a known type to use get methods.
+     *
+     * @@param intent the intent
+    */
+    protected @{@ClassNames.IntentBase(TheService)}(final Intent intent) {
+        super(intent);
+    }
+
+    /**
+    * Protected constructor to create derived type with a specified action.
+    *
+    * @@param action the action
+    */
+    protected @{@ClassNames.IntentBase(TheService)}(String action) {
+        super(action);
+    }
+    @((new RegionEnd { RegionLabel = ctorRegion }).TransformText().Trim())
+
+    @((new RegionBeg { RegionLabel = intentValidationRegion }).TransformText().Trim())
+    
+    @foreach (var action in TheService.Actions.IncomingAndExternalActions)
+    {
+    @:/**
+    @: * Checks if the provided intent action matches the expected
+    @: * 
+    @: * @@param intent intent to verify
+    @: * 
+    @: * @@return True if the intent matches the expected value
+    @: */
+    @:public static boolean @{@action.ValidationMethodName}(final Intent intent) {
+    @:    return intent != null && @{@action.FieldName(TheService)}.equals(intent.getAction());
+    @:}
+    @:
+    }
+
+    @((new RegionEnd { RegionLabel = intentValidationRegion }).TransformText().Trim())
+
+    @((new RegionBeg { RegionLabel = extraGetPutRegion }).TransformText().Trim())
+
+    @foreach (var extra in TheService.Extras.InternalAndPublicExtras)
+    {
+    @extra.PutMethodComment()
+    @:protected @{ @extra.PutMethodDefinition()} {
+    @:    putExtra(@{ @extra.FieldName()}, @{ @extra.ParamName() }@{ @(extra.IsEnum ? ".ordinal()" : "") });
+    @:}
+    @extra.GetMethodImplComment()
+    @extra.GetMethodImpl("protected")
+    @:
+    }
+
+    @((new RegionEnd { RegionLabel = extraGetPutRegion }).TransformText().Trim())
+
+    @@Override
+    public String toString(){
+        return toString(StringUtils.EmptyString);
+    }
+    
+    protected String toString(final String str){
+        return this.getClass().getSimpleName() + " [" + str + "]";
+    }
+
+}

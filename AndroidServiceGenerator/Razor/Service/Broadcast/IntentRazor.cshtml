@@ -1,0 +1,186 @@
+﻿@* Generator : Template TypeVisibility : Internal *@
+@using System
+@using System.CodeDom
+@using System.Collections.Generic
+@using System.Linq
+@using Parse
+@using Razor.Service.Broadcast
+@using Razor.Service
+@using Razor.Common
+@functions {
+    public ServiceParser TheService { get; set; }
+    public ActionBase TheAction { get; set; }
+}
+
+@* Copyright *@
+@{
+    @(new Copyright().TransformText());
+}
+@* Package *@
+@{
+    var package = TheService.Package + ".broadcast.";
+
+    if (TheAction is IncomingAction) {package += "incoming;";}
+    if (TheAction is OutgoingAction) {package += "outgoing;";}
+    if (TheAction is ExternalAction) {package += "external;";}
+}
+package @{@package}
+@* Imports *@
+import android.content.Intent;
+
+import @{@TheService.Package}.broadcast.@{@ClassNames.IntentBase(TheService)};
+@foreach(var imp in TheService.Imports)
+{
+@:import @{@imp};
+}
+@if ((TheAction as ExternalAction) != null)
+{
+    @foreach (var imp in (TheAction as ExternalAction).Imports)
+    {
+    @:import @{@imp};
+    }    
+}
+/**
+@if(TheAction is IncomingAction)
+{
+@: * Intent for the {@@link " + ServiceWriter.ClassName(Service) +"} 
+if (!string.IsNullOrWhiteSpace(TheAction.ClassCommentReason))
+{
+    @TheAction.ClassCommentReason
+    @:
+}
+else
+{
+@: * [TODO: SAY THAT THE INTENT IS FOR]    
+}
+@: *
+@: * This intent should only be created through {@@link @ClassNames.IntentFactory(TheService)#create@{@TheAction.MixedCaseName} function.
+@: * All intended functionality and utilization is defined for that method.
+@: *
+@: * This intent should now be instantiated directly.
+}
+@if (TheAction is OutgoingAction)
+{
+@: * This intent is used by the {@@link @TheService.Name} to broadcast
+if (!string.IsNullOrWhiteSpace(TheAction.ClassCommentReason))
+{
+    @TheAction.ClassCommentReason
+    @:
+}
+else
+{
+@: * [TODO: Put why the service is sending this out]
+}
+@: *
+@: * This intent should only be broadcast by {@@link @TheService.Name}
+}
+@if (TheAction is ExternalAction)
+{
+@: * This is a wrapper for an externally defined and broadcast intent.
+@: * The intent this wraps is broadcast when 
+if (!string.IsNullOrWhiteSpace(TheAction.ClassCommentReason))
+{
+    @TheAction.ClassCommentReason
+    @:
+}
+else
+{
+@: * [TODO: THE CONDITION(S) IT'S SENT]
+}
+@: *
+@: * The purpose of this intent is to encapsulate and cleanly expose data from an externally defined intent.
+@: * The service and other components utilizing this wrapper never need to know the specific ACTION or EXTRA values.
+@: * All details making this intent are confined to {@@link @ClassNames.IntentBase(TheService)}.
+@: *
+@: *
+@: * This MUST NOT be broadcast by anyone.
+}
+ *
+ */
+public final class @ClassNames.Intent(TheService, TheAction) extends @ClassNames.IntentBase(TheService) {
+    /* (non-Javadoc)
+     * @@see @{@TheService.Package}.broadcast.@ClassNames.IntentBase(TheService)#@{@ClassNames.IntentBase(TheService)}(Intent)
+    */
+    public @{@ClassNames.Intent(TheService, TheAction)}(final Intent intent){
+        super(intent);
+    }
+@if(!(TheAction is ExternalAction)){
+@:    /* (non-Javadoc)
+@:     * @@see @{@TheService.Package}.broadcast.@ClassNames.IntentBase(TheService)#@{@ClassNames.IntentBase(TheService)}(String)
+@:    */
+@:    public @{@ClassNames.Intent(TheService, TheAction)}(@{@TheAction.ParamsDeclarations(TheService)}){
+@:        super(@{@TheAction.FieldName(TheService)});
+if (TheAction is IncomingAction)
+{
+@:        setComponent(getServiceComponentName());
+}
+@:
+@:        @TheAction.ConstructorPuts(TheService)
+@:    }   
+}
+@foreach (var extraKey in TheAction.ParamExtraKeys)
+{
+    if (TheService.Extras.InternalAndPublicExtras.All(x => x.Name != extraKey))
+    {
+        var extra = TheService.Extras.ExternalExtraGroups.First(x => x.ActionKey == TheAction.Name).ExternalExtras.First(x => x.Name == extraKey);
+@:
+@:@{@extra.PutMethodComment()}
+    @:protected @{ @extra.PutMethodDefinition()} {
+    @:    putExtra(@{ @extra.FieldName()}, @{ @extra.ParamName() }@{ @(extra.IsEnum ? ".ordinal()" : "") });
+    @:}
+    }
+}
+    @foreach (var extra in TheAction.GetterExtraList(TheService))
+    {
+    if (TheService.Extras.InternalAndPublicExtras.Any(overExtra => overExtra.Name == extra.Name))
+    {
+    if (TheAction is ExternalAction)
+    {
+@extra.GetMethodImplComment()
+@extra.GetMethodImpl("public")
+    }
+    else
+    {   
+@:    /* (non-Javadoc)
+@:     * @@see @{@TheService.Package}.broadcast.@ClassNames.IntentBase(TheService)#@{@extra.GetMethodName()}()
+@:     */
+@:    @@Override 
+@extra.GetMethodOverride("public")
+    }
+    }
+    else
+    {
+@extra.GetMethodImplComment()
+@extra.GetMethodImpl("public")
+    }
+    }
+@{
+    var doToString = false;
+    foreach (var extra in TheAction.GetterExtraList(TheService))
+    {
+        if (TheService.Extras.DistinctExtras.Any(overExtra => overExtra.Name == extra.Name))
+        {
+            doToString = true;
+        }
+    }
+}
+@if(doToString)
+{
+@:
+@:    @@Override
+@:    public String toString(){
+@:        return super.toString(
+    var list = new List<string>();
+                        foreach (var extra in TheAction.GetterExtraList(TheService))
+                        {
+                            if (TheService.Extras.DistinctExtras.Any(overExtra => overExtra.Name == extra.Name))
+                            {
+                                list.Add("            \"[" + extra.GetMethodName() + "()=\" + " + extra.GetMethodName() + "() + \"]\"");
+                            }
+                        }
+            @string.Join(" +" + Environment.NewLine, list)
+@:
+@:        );
+@:    }
+}
+}

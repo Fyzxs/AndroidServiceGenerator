@@ -1,0 +1,60 @@
+﻿@* Generator : Template TypeVisibility : Internal *@
+@using Parse
+@using Razor.Service.Broadcast
+@using Razor.Service
+@using Razor.Common
+@functions {
+    public ServiceParser TheService { get; set; }
+}
+@* Copyright *@
+@{
+    @(new Copyright().TransformText());
+}
+@* Package *@
+package @{@TheService.Package}.broadcast;
+@* Imports *@
+@foreach (var action in TheService.Actions.IncomingActions)
+{
+@:import @{@TheService.Package}.broadcast.incoming.@{@action.IntentClassName(TheService)};
+}
+@foreach(var imp in TheService.Imports)
+{
+@:import @{@imp};
+}
+
+/**
+ * The factory create functions build intents to be sent to @TheService.Name.
+ *
+ * Intents this service broadcasts are not created here.
+ * External events this service listens are not created here.
+*/
+public final class @ClassNames.IntentFactory(TheService){
+@foreach (var action in TheService.Actions.IncomingActions)
+{
+@:    /**
+    if (!string.IsNullOrWhiteSpace(action.ClassCommentReason))
+    {
+@:     * @{@action.ClassCommentReason}
+    }
+    else
+    {
+@:     * TODO: Add useful comment about what this intent will do
+    }
+@:     *
+      foreach (var key in action.ParamExtraKeys)
+      {
+        foreach (var ex in TheService.Extras.InternalAndPublicExtras)
+        {
+if (ex.Name != key) {continue;}
+@:     * @@param @ex.ParamName()
+        }
+      }
+@:     *
+@:     * @@return instance of @action.IntentClassName(TheService)
+@:     */
+
+@:    public static @ClassNames.IntentBase(TheService) create@{@action.MixedCaseName}(@{@action.ParamsDeclarations(TheService)}) {
+@:        return new @{@action.IntentClassName(TheService)}(@{@action.ParamsNames((TheService))});
+@:    }
+}
+}

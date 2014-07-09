@@ -1,0 +1,129 @@
+﻿@* Generator : Template TypeVisibility : Internal *@
+@using Parse
+@using Razor.Service
+@using Razor.Common
+
+
+@functions {
+    public ServiceParser TheService { get; set; }
+}
+@{
+    //const strin wontCompile;
+    const string overrideMethodsRegion = "Override Methods";
+    const string actionMethodsRegion = "Action Methods";
+    const string staticInitRegion = "Static Initialization";
+    const string ctorRegion = "ctor";
+}
+
+@* Copyright *@
+@{
+    var copyright = new Copyright();
+    @copyright.TransformText();
+}
+@* Package *@
+package @TheService.Package;
+@* Imports *@
+import android.content.Intent;
+import com.laskon.android.stub.WrappingLog;
+import @{@TheService.Package}.broadcast.*;
+import com.laskcon.android.@TheService.Type.ToString();
+@if (TheService.LocalRedirector)
+{
+@:import android.content.IntentFilter;
+}
+@if(TheService.Actions.OutgoingActions.Count > 0)
+{ 
+@:import @{@TheService.Package}.broadcast.@{@ClassNames.Broadcaster(TheService)};
+}
+@foreach (var action in TheService.Actions.IncomingActions)
+{
+@:import @{@TheService.Package}.broadcast.incoming.@{@action.IntentClassName(TheService)};
+}
+@foreach (var action in TheService.Actions.ExternalActions)
+{
+@:import @{@TheService.Package}.broadcast.external.@{@action.IntentClassName(TheService)};
+}
+@foreach(var imp in TheService.Imports)
+{
+@:import @{@imp};
+}
+/*
+@if(string.IsNullOrWhiteSpace(TheService.ClassOverview)){
+@: * TODO: Give an overview of what this public class does and how other components utilize it      
+}else
+{
+    @TheService.ClassOverview
+}
+ *
+ * This class requires an entry in the manifest to register this service. 
+ * Example entry: <service android:name="@{@TheService.Package}.@{@TheService.Name}" android:exported="false" />
+ */
+public final class @TheService.Name extends @TheService.Type.ToString() {
+
+    @((new RegionBeg { RegionLabel = staticInitRegion }).TransformText().Trim())
+    @* Initialize Method *@
+    /**
+     *  Initialization of the static components of the class
+     */
+    public static void initialize(){
+        @if (TheService.LocalRedirector) { 
+        @:registerRedirectorFilter(); 
+        }
+    }
+
+    @((new RegionEnd { RegionLabel = staticInitRegion }).TransformText().Trim())
+
+@if (TheService.Type.ToString().Contains("IntentService"))
+{
+    @((new RegionBeg { RegionLabel = ctorRegion }).TransformText().Trim())
+@:
+@:    public @{@TheService.Name}(){
+@:        super(@{@TheService.Name}.class.getSimpleName());
+@:    }
+@:    
+    @((new RegionEnd { RegionLabel = ctorRegion }).TransformText().Trim())
+}
+
+    @((new ServiceLocalRedirector { TheService = TheService }).TransformText().Trim())
+
+    @((new RegionBeg { RegionLabel = overrideMethodsRegion }).TransformText().Trim())
+
+    @@Override
+    protected void initActionMethods() {
+     
+        try {
+@{
+    var registerMethod = TheService.Type.ToString().Contains("IntentService") ? "registerAction" : "registerActionCallable";
+}
+        @foreach (var action in TheService.Actions.IncomingAndExternalActions)
+        {
+            @:@{@registerMethod}(@{@ClassNames.IntentBase(TheService)}.@{@action.FieldName(TheService)}, "on@{@action.MixedCaseName}");
+        }
+        } catch (NoSuchMethodException e) {
+           WrappingLog.e(e.getLocalizedMessage());
+        }
+    }
+            
+
+    @((new RegionEnd { RegionLabel = overrideMethodsRegion }).TransformText().Trim())
+
+    @((new RegionBeg { RegionLabel = actionMethodsRegion }).TransformText().Trim())
+    //
+    // Service Defined Intents
+    //
+@foreach (var action in TheService.Actions.IncomingActions)
+{
+    @:@((new ServiceOnActionMethod { TheAction = action, TheService = TheService }).TransformText().Trim())
+    @:
+}
+    //
+    // Externally Defined Intents
+    //
+@foreach (var action in TheService.Actions.ExternalActions)
+{
+    @:@((new ServiceOnActionMethod { TheAction = action, TheService = TheService }).TransformText().Trim())
+    @:
+}
+    @((new RegionEnd { RegionLabel = actionMethodsRegion }).TransformText().Trim())
+
+}@* Close Class *@
